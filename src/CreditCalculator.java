@@ -1,46 +1,51 @@
 import java.util.Scanner;
 
 public class CreditCalculator {
-    public static int payment, Loan,months;
-    public static final Scanner scanner = new Scanner(System.in);
-
     public static void main(String[] args) {
+        float Loan, Principal, month, month_payment,i;
+        Scanner scanner = new Scanner(System.in);
         System.out.println("""
-                Loan principal: 1000
-                Month 1:repaid 250
-                Month 2:repaid 250
-                Month 3:repaid 500
-                The loan has been repaid
-                """);
-        System.out.println("Enter the loan principal");
-        Loan = scanner.nextInt();
-        System.out.println("""
-                What do you want to calculate?
-                type "m" - for number of monthly payments,
-                type "p" - for the monthly payment:""");
-        String input = scanner.next();
-        if (input.equals("m")) {
+        What do you want to calculate?\ntype "n" - for number of monthly payments,\ntype "a" - for annuity monthly payment amount,\ntype "p" - for the loan principal:""");
+        String user = scanner.next();
+        if (user.equals("n")) {
+            System.out.println("Enter a loan principal:");
+            Principal = scanner.nextInt();
             System.out.println("Enter the monthly payment:");
-            int pay_month = scanner.nextInt();
-            if (Loan % pay_month ==0){
-                months = Loan / pay_month;
+            month_payment = scanner.nextInt();
+            System.out.println("Enter a loan interest:");
+            Loan = scanner.nextFloat();
+            month = (float) (Math.log(month_payment /(month_payment -((Loan /(12*100))* Principal)))/Math.log(1+(Loan /(12*100))));
+            int period_count = Math.round(month);
+            int year_count = (period_count / 12);
+            int month_count = (period_count % 12);
+
+            if (year_count>0 & month_count >0){
+                System.out.println("It will take " + year_count + " years and " + month_count + " month to repay this loan");
+            } else if(year_count == 0){
+                System.out.println("It will take " + month_count + " month to repay this loan");
             } else {
-                months = Loan / pay_month +1;
+                System.out.println("It will take " + year_count + " years to repay this loan");
             }
-            System.out.println("It will take " + months + " month to repay the loan.");
         }
-        if (input.equals("p")) {
-            System.out.println("Enter number of month:");
-            months = scanner.nextInt();
-            if (Loan % months ==0){
-                payment = Loan / months;
-                System.out.println("Your monthly payment = " + payment);
-            }
-            else {
-                payment = Loan / months + 1;
-                int lastPayment = Loan -(months-1)*payment;
-                System.out.println("Your monthly payment = " + payment + " and the last payment = " + lastPayment);
-            }
+        else if (user.equals("a")) {
+            System.out.println("Enter a loan principal:");
+            Principal = scanner.nextFloat();
+            System.out.println("Enter the number of periods:");
+            month = scanner.nextInt();
+            System.out.println("Enter a loan interest:");
+            Loan = scanner.nextFloat();
+            month_payment = (float) (Principal *(((Loan /(12*100))*Math.pow((1+(Loan /(12*100))), month))/(Math.pow((1+(Loan /(12*100))), month)-1)));
+            System.out.printf("Your monthly payment = %.0f", month_payment);
+        }
+        else {
+            System.out.println("Enter the annuity payment:");
+            month_payment = scanner.nextFloat();
+            System.out.println("Enter the number of periods:");
+            month = scanner.nextInt();
+            System.out.println("Enter a loan interest:");
+            Loan = scanner.nextFloat();
+            Principal = (float) (month_payment /(((Loan /(12*100))*Math.pow((1+(Loan /(12*100))), month))/(Math.pow((1+(Loan /(12*100))), month)-1)));
+            System.out.printf("Your loan principal = %.0f", Principal);
         }
     }
 }
