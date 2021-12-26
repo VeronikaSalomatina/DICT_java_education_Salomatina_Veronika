@@ -66,6 +66,10 @@ public class TicTacToe {
         return right_diag_Os(gameState) || left_diagonal_OfOs(gameState);
     }
 
+    public static boolean Xwins(String[] gameState) {
+        return row_OfXs(gameState) || col_X(gameState) || diagonal_OfXs(gameState);
+    }
+
     public static boolean line(String player, String[] line) {
         String[] expectedLine = new String[]{player, player, player};
         return Arrays.equals(line, expectedLine);
@@ -123,8 +127,13 @@ public class TicTacToe {
     public static boolean rowOf(String player, String[] gameState) {
         return lines(player, Rows(gameState));
     }
+
     public static boolean colOf(String player, String[] gameState) {
         return lines(player, Cols(gameState));
+    }
+
+    public static boolean row_OfXs(String[] gameState) {
+        return rowOf("X", gameState);
     }
 
     public static void process(String[] game_state, String player) {
@@ -152,6 +161,10 @@ public class TicTacToe {
         return new String[]{gameState[2], gameState[4], gameState[6]};
     }
 
+    public static boolean without_winner(String[] gameState) {
+        return !Xwins(gameState) && !Owins(gameState);
+    }
+
     public static int count(String player, String[] gameState) {
         int count = 0;
         for (String move : gameState) {
@@ -165,6 +178,18 @@ public class TicTacToe {
     public static boolean wrong(String[] gameState) {
         int movesDiff = count("X", gameState) - count("O", gameState);
         return movesDiff < -1 || movesDiff > 1;
+    }
+
+    public static boolean Draw(String[] gameState) {
+        return without_winner(gameState) && !available(gameState);
+    }
+
+    public static boolean notEnd(String[] gameState) {
+        return without_winner(gameState) && available(gameState);
+    }
+
+    public static boolean impossible(String[] gameState) {
+        return Xwins(gameState) && Owins(gameState) || wrong(gameState);
     }
 
     public static String get_status(String[] state) {
