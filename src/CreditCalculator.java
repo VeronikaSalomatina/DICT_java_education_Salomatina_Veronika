@@ -1,51 +1,80 @@
-import java.util.Scanner;
-
 public class CreditCalculator {
     public static void main(String[] args) {
-        float Loan, Principal, month, month_payment,i;
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("""
-        What do you want to calculate?\ntype "n" - for number of monthly payments,\ntype "a" - for annuity monthly payment amount,\ntype "p" - for the loan principal:""");
-        String user = scanner.next();
-        if (user.equals("n")) {
-            System.out.println("Enter a loan principal:");
-            Principal = scanner.nextInt();
-            System.out.println("Enter the monthly payment:");
-            month_payment = scanner.nextInt();
-            System.out.println("Enter a loan interest:");
-            Loan = scanner.nextFloat();
-            month = (float) (Math.log(month_payment /(month_payment -((Loan /(12*100))* Principal)))/Math.log(1+(Loan /(12*100))));
-            int period_count = Math.round(month);
-            int year_count = (period_count / 12);
-            int month_count = (period_count % 12);
+        float Loan, Principal, Month, payment_of_month, Count, dif;
+        int o = 0;
+        String pr = System.getProperty("principal");
+        String pa = System.getProperty("payment");
+        String i = System.getProperty("interest");
+        String t = System.getProperty("type");
+        String pe = System.getProperty("periods");
 
-            if (year_count>0 & month_count >0){
-                System.out.println("It will take " + year_count + " years and " + month_count + " month to repay this loan");
-            } else if(year_count == 0){
-                System.out.println("It will take " + month_count + " month to repay this loan");
-            } else {
-                System.out.println("It will take " + year_count + " years to repay this loan");
-            }
-        }
-        else if (user.equals("a")) {
-            System.out.println("Enter a loan principal:");
-            Principal = scanner.nextFloat();
-            System.out.println("Enter the number of periods:");
-            month = scanner.nextInt();
-            System.out.println("Enter a loan interest:");
-            Loan = scanner.nextFloat();
-            month_payment = (float) (Principal *(((Loan /(12*100))*Math.pow((1+(Loan /(12*100))), month))/(Math.pow((1+(Loan /(12*100))), month)-1)));
-            System.out.printf("Your monthly payment = %.0f", month_payment);
+        if (t == null){
+            System.out.println("Incorrect parameters!!!");
+            System.exit(0);
         }
         else {
-            System.out.println("Enter the annuity payment:");
-            month_payment = scanner.nextFloat();
-            System.out.println("Enter the number of periods:");
-            month = scanner.nextInt();
-            System.out.println("Enter a loan interest:");
-            Loan = scanner.nextFloat();
-            Principal = (float) (month_payment /(((Loan /(12*100))*Math.pow((1+(Loan /(12*100))), month))/(Math.pow((1+(Loan /(12*100))), month)-1)));
-            System.out.printf("Your loan principal = %.0f", Principal);
+            if (t.equals("annuity")) {
+                if(pr != null && pa != null && i != null){
+                    payment_of_month = (float) Double.parseDouble(pa);
+                    Principal = (float) Double.parseDouble(pr);
+                    Loan = (float) Double.parseDouble(i);
+                    Count =  (Loan /(12*100));
+                    Month = (float) (Math.log(payment_of_month /(payment_of_month -(Count * Principal)))/Math.log(1+ Count));
+                    int period = (int) Math.round(Month),year = (period / 12),month = (period % 12);
+
+                    if (year>0 & month >0){
+                        System.out.println("It will take " + year + " years and " + month + " month to repay this loan");
+                    }
+                    else if(year == 0){
+                        System.out.println("It will take "+ month + " month to repay this loan");
+                    }
+                    else {
+                        System.out.println("It will take "+ year + " years to repay this loan");
+                    }
+                }
+
+                else if (pe != null && pa != null && i != null) {
+                    Month = (float) Double.parseDouble(pe);
+                    payment_of_month = (float) Double.parseDouble(pa);
+                    Loan = (float) Double.parseDouble(i);
+                    Count =  (Loan /(12*100));
+
+                    Principal = (float) (payment_of_month /((Count *Math.pow((1+ Count), Month))/(Math.pow((1+ Count), Month)-1)));
+                    System.out.printf("Your loan principal = %.0f", Principal);
+                }
+
+                else if (pr != null && pe != null && i != null){
+                    Principal = (float) Double.parseDouble(pr);
+                    Month = (float) Double.parseDouble(pe);
+                    Loan = (float) Double.parseDouble(i);
+                    Count =  (Loan /(12*100));
+
+                    payment_of_month = (float) (Principal *((Count *Math.pow((1+ Count), Month))/(Math.pow((1+ Count), Month)-1)));
+                    System.out.printf("Your monthly payment = %.0f", payment_of_month);
+                }else {
+                    System.out.println("Incorrect parameters.");
+                    System.exit(0);
+                }
+            }else if (t.equals("diff")) {
+                if (pr == null || pe == null || i == null) {
+                    System.out.println("Incorrect parameters!!!");
+                    System.exit(0);
+                }
+                Month = (float) Double.parseDouble(pe);
+                Principal = (float) Double.parseDouble(pr);
+                Loan = (float) Double.parseDouble(i);
+                Count = (Loan / (12 * 100));
+                for (int m = 1; m <= Month; m++) {
+                    dif = Principal / Month + Count * (Principal - ((Principal * (m - 1)) / (Month)));
+                    dif = Math.round(dif);
+                    o = (int) (o + (dif - (Principal / Month)));
+                    System.out.println("Month " + m + ": payment is " + dif);
+                }
+                System.out.println("Overpayment = " + o);
+            } else {
+                System.out.println("Incorrect parameters!!!");
+                System.exit(0);
+            }
         }
     }
 }
